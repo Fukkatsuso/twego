@@ -73,17 +73,77 @@ func AddSearchRules(bearerToken string, rules []SearchRule) error {
 	return nil
 }
 
+func DeleteSearchRules(bearerToken string, ids []string) error {
+	const endpoint = "https://api.twitter.com/2/tweets/search/stream/rules"
+
+	var delete struct {
+		Delete struct {
+			Ids []string `json:"ids"`
+		} `json:"delete"`
+	}
+	delete.Delete.Ids = ids
+
+	js, err := json.Marshal(delete)
+	if err != nil {
+		return err
+	}
+
+	reqBody := bytes.NewBuffer(js)
+
+	req, err := http.NewRequest(http.MethodPost, endpoint, reqBody)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
+	req.Header.Add("Content-type", "application/json")
+
+	client := new(http.Client)
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var res struct {
+		Meta struct {
+			Sent    time.Time `json:"sent"`
+			Summary struct {
+				Deleted    int `json:"deleted"`
+				NotDeleted int `json:"not_deleted"`
+			} `json:"summary"`
+		} `json:"meta"`
+	}
+	if err := json.Unmarshal(body, &res); err != nil {
+		return err
+	}
+	fmt.Printf("res: %+v\n", res)
+
+	return nil
+}
+
 func main() {
 	bearerToken := os.Getenv("TWITTER_BEARER_TOKEN")
 
-	rules := []SearchRule{
-		{
-			Value: "golang -is:retweet",
-			Tag:   "golang",
-		},
-	}
+	// rules := []SearchRule{
+	// 	{
+	// 		Value: "golang -is:retweet",
+	// 		Tag:   "golang",
+	// 	},
+	// }
 
-	err := AddSearchRules(bearerToken, rules)
+	// err := AddSearchRules(bearerToken, rules)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	ids := []string{"1509544617284280327"}
+	err := DeleteSearchRules(bearerToken, ids)
 	if err != nil {
 		fmt.Println(err)
 	}
