@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  twego:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: twego
+    env_file:
+      - .env
+    volumes:
+      - ./:/go/src/github.com/Fukkatsuso/twego
+    command: go run main.go
