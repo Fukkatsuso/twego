@@ -17,7 +17,7 @@ type Tweet struct {
 	} `json:"matching_rules"`
 }
 
-func GetTweetStream(bearerToken string) <-chan Tweet {
+func GetTweetStream(done <-chan struct{}, bearerToken string) <-chan Tweet {
 	stream := make(chan Tweet)
 
 	go func() {
@@ -25,6 +25,7 @@ func GetTweetStream(bearerToken string) <-chan Tweet {
 
 		const endpoint = "https://api.twitter.com/2/tweets/search/stream"
 
+		// create new request
 		req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 		if err != nil {
 			fmt.Println(err)
@@ -33,6 +34,7 @@ func GetTweetStream(bearerToken string) <-chan Tweet {
 
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
 
+		// send the request
 		client := new(http.Client)
 		resp, err := client.Do(req)
 		if err != nil {
@@ -41,16 +43,25 @@ func GetTweetStream(bearerToken string) <-chan Tweet {
 		}
 		defer resp.Body.Close()
 
+		// decode the response to Tweet
 		decoder := json.NewDecoder(resp.Body)
-
 		for {
-			var tweet Tweet
-			if err := decoder.Decode(&tweet); err != nil {
-				fmt.Println(err)
-				return
-			}
+			decoded := make(chan Tweet)
+			go func() {
+				defer close(decoded)
+				var tweet Tweet
+				if err := decoder.Decode(&tweet); err != nil {
+					fmt.Println(err)
+					return
+				}
+				decoded <- tweet
+			}()
 
-			stream <- tweet
+			select {
+			case <-done:
+				return
+			case stream <- <-decoded:
+			}
 		}
 	}()
 
