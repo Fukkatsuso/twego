@@ -10,50 +10,62 @@ import (
 )
 
 type SearchRule struct {
+	ID    string `json:"id"`
 	Value string `json:"value"`
 	Tag   string `json:"tag,omitempty"`
 }
 
-func AddSearchRules(bearerToken string, rules []SearchRule) error {
+func AddSearchRules(bearerToken string, rules []SearchRule) ([]SearchRule, error) {
 	const endpoint = "https://api.twitter.com/2/tweets/search/stream/rules"
 
-	js, err := json.Marshal(struct {
-		Add []SearchRule `json:"add"`
-	}{
-		Add: rules,
-	})
+	// convert []SearchRule to request body
+	type addElem struct {
+		Value string `json:"value"`
+		Tag   string `json:"tag,omitempty"`
+	}
+	var add struct {
+		Add []addElem `json:"add"`
+	}
+	for _, rule := range rules {
+		elem := addElem{
+			Value: rule.Value,
+			Tag:   rule.Tag,
+		}
+		add.Add = append(add.Add, elem)
+	}
+
+	js, err := json.Marshal(add)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	reqBody := bytes.NewBuffer(js)
 
+	// create new request
 	req, err := http.NewRequest(http.MethodPost, endpoint, reqBody)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
 	req.Header.Add("Content-type", "application/json")
 
+	// send the request
 	client := new(http.Client)
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	// convert the response to []SearchRule
 	var res struct {
-		Data []struct {
-			Value string `json:"value"`
-			Tag   string `json:"tag,omitempty"`
-			ID    string `json:"id"`
-		} `json:"data"`
+		Data []SearchRule `json:"data"`
 		Meta struct {
 			Sent    time.Time `json:"sent"`
 			Summary struct {
@@ -65,11 +77,10 @@ func AddSearchRules(bearerToken string, rules []SearchRule) error {
 		} `json:"meta"`
 	}
 	if err := json.Unmarshal(body, &res); err != nil {
-		return err
+		return nil, err
 	}
-	fmt.Printf("res: %+v\n", res)
 
-	return nil
+	return res.Data, nil
 }
 
 func DeleteSearchRules(bearerToken string, ids []string) error {
