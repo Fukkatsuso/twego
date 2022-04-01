@@ -140,43 +140,41 @@ func DeleteSearchRules(bearerToken string, ids []string) error {
 	return nil
 }
 
-func GetSearchRules(bearerToken string) error {
+func GetSearchRules(bearerToken string) ([]SearchRule, error) {
 	const endpoint = "https://api.twitter.com/2/tweets/search/stream/rules"
 
+	// create new request
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
 
+	// send the request
 	client := new(http.Client)
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	// convert the response to []SearchRule
 	var res struct {
-		Data []struct {
-			ID    string `json:"id"`
-			Value string `json:"value"`
-			Tag   string `json:"tag,omitempty"`
-		} `json:"data"`
+		Data []SearchRule `json:"data"`
 		Meta struct {
 			Sent        time.Time `json:"sent"`
 			ResultCount int       `json:"result_count"`
 		} `json:"meta"`
 	}
 	if err := json.Unmarshal(body, &res); err != nil {
-		return err
+		return nil, err
 	}
-	fmt.Printf("res: %+v\n", res)
 
-	return nil
+	return res.Data, nil
 }

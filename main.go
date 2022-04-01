@@ -8,30 +8,32 @@ import (
 func main() {
 	bearerToken := os.Getenv("TWITTER_BEARER_TOKEN")
 
-	rules := []SearchRule{
-		{
-			Value: "golang -is:retweet",
-			Tag:   "golang",
-		},
-	}
+	// rules := []SearchRule{
+	// 	{
+	// 		Value: "golang -is:retweet",
+	// 		Tag:   "golang",
+	// 	},
+	// }
 
-	res, err := AddSearchRules(bearerToken, rules)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Printf("add: %+v\n", res)
+	// res, err := AddSearchRules(bearerToken, rules)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+	// fmt.Printf("add: %+v\n", res)
 
-	// ids := []string{"1509544617284280327"}
+	// ids := []string{"1509899609703071747"}
 	// err := DeleteSearchRules(bearerToken, ids)
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
 
-	// err := GetSearchRules(bearerToken)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
+	res, err := GetSearchRules(bearerToken)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("rules: %+v\n", res)
 
 	// w := tabwriter.NewWriter(os.Stdout, 0, 2, 0, ' ', 0)
 
