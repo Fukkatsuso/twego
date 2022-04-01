@@ -18,7 +18,7 @@ type SearchRule struct {
 func AddSearchRules(bearerToken string, rules []SearchRule) ([]SearchRule, error) {
 	const endpoint = "https://api.twitter.com/2/tweets/search/stream/rules"
 
-	// convert []SearchRule to request body
+	// convert rules to request body
 	type addElem struct {
 		Value string `json:"value"`
 		Tag   string `json:"tag,omitempty"`
