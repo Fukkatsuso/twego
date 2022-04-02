@@ -51,13 +51,7 @@ var rulesAddCmd = &cobra.Command{
 			return err
 		}
 
-		w := tabwriter.NewWriter(os.Stdout, 0, 2, 3, ' ', 0)
-		defer w.Flush()
-
-		fmt.Fprintf(w, "ID\tVALUE\tTAG\n")
-		for _, rule := range res {
-			fmt.Fprintf(w, "%s\t%s\t%s\n", rule.ID, rule.Value, rule.Tag)
-		}
+		printRules(res)
 
 		return nil
 	},
@@ -94,16 +88,20 @@ var rulesListCmd = &cobra.Command{
 			return err
 		}
 
-		w := tabwriter.NewWriter(os.Stdout, 0, 2, 3, ' ', 0)
-		defer w.Flush()
-
-		fmt.Fprintf(w, "ID\tVALUE\tTAG\n")
-		for _, rule := range rules {
-			fmt.Fprintf(w, "%s\t%s\t%s\n", rule.ID, rule.Value, rule.Tag)
-		}
+		printRules(rules)
 
 		return nil
 	},
+}
+
+func printRules(rules []Rule) {
+	w := tabwriter.NewWriter(os.Stdout, 0, 2, 3, ' ', 0)
+	defer w.Flush()
+
+	fmt.Fprintf(w, "ID\tVALUE\tTAG\n")
+	for _, rule := range rules {
+		fmt.Fprintf(w, "%s\t%s\t%s\n", rule.ID, rule.Value, rule.Tag)
+	}
 }
 
 type Rule struct {
