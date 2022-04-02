@@ -10,4 +10,4 @@ services:
       - .env
     volumes:
       - ./:/go/src/github.com/Fukkatsuso/twego
-    command: go run .
+    command: go run main.go rules list
