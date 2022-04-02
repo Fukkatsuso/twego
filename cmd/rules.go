@@ -14,7 +14,10 @@ import (
 )
 
 func init() {
+	rulesAddCmd.Flags().StringVarP(&rulesAddFlags.Tag, "tag", "t", "", "Tag the rule added")
+
 	rulesCmd.AddCommand(
+		rulesAddCmd,
 		rulesListCmd,
 	)
 
@@ -23,6 +26,40 @@ func init() {
 
 var rulesCmd = &cobra.Command{
 	Use: "rules",
+}
+
+var rulesAddFlags struct {
+	Tag string
+}
+
+var rulesAddCmd = &cobra.Command{
+	Use:  "add",
+	Args: cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		bearerToken := os.Getenv("TWITTER_BEARER_TOKEN")
+
+		rules := []Rule{
+			{
+				Value: args[0],
+				Tag:   rulesAddFlags.Tag,
+			},
+		}
+
+		res, err := AddRules(bearerToken, rules)
+		if err != nil {
+			return err
+		}
+
+		w := tabwriter.NewWriter(os.Stdout, 0, 2, 3, ' ', 0)
+		defer w.Flush()
+
+		fmt.Fprintf(w, "ID\tVALUE\tTAG\n")
+		for _, rule := range res {
+			fmt.Fprintf(w, "%s\t%s\t%s\n", rule.ID, rule.Value, rule.Tag)
+		}
+
+		return nil
+	},
 }
 
 var rulesListCmd = &cobra.Command{
