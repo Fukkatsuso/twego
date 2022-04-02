@@ -18,6 +18,7 @@ func init() {
 
 	rulesCmd.AddCommand(
 		rulesAddCmd,
+		rulesDeleteCmd,
 		rulesListCmd,
 	)
 
@@ -56,6 +57,27 @@ var rulesAddCmd = &cobra.Command{
 		fmt.Fprintf(w, "ID\tVALUE\tTAG\n")
 		for _, rule := range res {
 			fmt.Fprintf(w, "%s\t%s\t%s\n", rule.ID, rule.Value, rule.Tag)
+		}
+
+		return nil
+	},
+}
+
+var rulesDeleteCmd = &cobra.Command{
+	Use:  "delete",
+	Args: cobra.MinimumNArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		bearerToken := os.Getenv("TWITTER_BEARER_TOKEN")
+
+		ids := args
+
+		err := DeleteRules(bearerToken, ids)
+		if err != nil {
+			return err
+		}
+
+		for _, id := range ids {
+			fmt.Println(id)
 		}
 
 		return nil

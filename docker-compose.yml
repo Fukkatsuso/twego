@@ -10,4 +10,4 @@ services:
       - .env
     volumes:
       - ./:/go/src/github.com/Fukkatsuso/twego
-    command: go run main.go rules add "docker -is:retweet" --tag "docker"
+    command: go run main.go rules delete 1510204591362609159
