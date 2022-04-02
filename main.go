@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"strings"
-	"text/tabwriter"
-	"time"
+	"github.com/Fukkatsuso/twego/cmd"
 )
 
 func main() {
-	bearerToken := os.Getenv("TWITTER_BEARER_TOKEN")
+	cmd.Execute()
+
+	// bearerToken := os.Getenv("TWITTER_BEARER_TOKEN")
 
 	// rules := []SearchRule{
 	// 	{
@@ -38,30 +36,30 @@ func main() {
 	// }
 	// fmt.Printf("rules: %+v\n", res)
 
-	done := make(chan struct{})
-	defer close(done)
+	// done := make(chan struct{})
+	// defer close(done)
 
-	w := tabwriter.NewWriter(os.Stdout, 0, 2, 0, ' ', 0)
+	// stream := GetTweetStream(done, bearerToken)
 
-	stream := GetTweetStream(done, bearerToken)
-	for {
-		select {
-		case tweet, ok := <-stream:
-			if !ok {
-				fmt.Println("stream is closed")
-				return
-			}
+	// w := tabwriter.NewWriter(os.Stdout, 0, 2, 0, ' ', 0)
+	// for {
+	// 	select {
+	// 	case tweet, ok := <-stream:
+	// 		if !ok {
+	// 			fmt.Println("stream is closed")
+	// 			return
+	// 		}
 
-			now := time.Now().Format("2006/01/02 15:04:05")
-			texts := strings.Split(tweet.Data.Text, "\n")
-			for i, text := range texts {
-				if i == 0 {
-					fmt.Fprintln(w, now, "\t", text)
-				} else {
-					fmt.Fprintln(w, "\t", text)
-				}
-			}
-			w.Flush()
-		}
-	}
+	// 		now := time.Now().Format("2006/01/02 15:04:05")
+	// 		texts := strings.Split(tweet.Data.Text, "\n")
+	// 		for i, text := range texts {
+	// 			if i == 0 {
+	// 				fmt.Fprintln(w, now, "\t", text)
+	// 			} else {
+	// 				fmt.Fprintln(w, "\t", text)
+	// 			}
+	// 		}
+	// 		w.Flush()
+	// 	}
+	// }
 }
