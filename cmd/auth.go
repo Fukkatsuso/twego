@@ -1,20 +1,28 @@
 package cmd
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/spf13/cobra"
 )
 
 func init() {
 	authCmd.Flags().StringVar(&authFlags.BearerToken, "bearer", "", "Set Twitter Bearer Token")
+	authCmd.Flags().StringVar(&authFlags.APIKey, "key", "", "Set Twitter API Key")
+	authCmd.Flags().StringVar(&authFlags.APISecret, "secret", "", "Set Twitter API Secret")
 
 	rootCmd.AddCommand(authCmd)
 }
 
 var authFlags struct {
 	BearerToken string
+	APIKey      string
+	APISecret   string
 }
 
 var authCmd = &cobra.Command{
@@ -24,7 +32,11 @@ var authCmd = &cobra.Command{
 			return AuthByBearerToken(authFlags.BearerToken, defaultConfigFilepath())
 		}
 
-		return errors.New("Bearer Token is required")
+		if authFlags.APIKey != "" && authFlags.APISecret != "" {
+			return AuthByConsumerKeys(authFlags.APIKey, authFlags.APISecret, defaultConfigFilepath())
+		}
+
+		return errors.New("Bearer Token or Consumer Keys (API Key & API Secret) is required")
 	},
 }
 
@@ -39,4 +51,50 @@ func checkAuth(cmd string) error {
 func AuthByBearerToken(bearerToken string, configFilepath string) error {
 	config.BearerToken = bearerToken
 	return writeConfig(config, configFilepath)
+}
+
+func AuthByConsumerKeys(apiKey, apiSecret string, configFilepath string) error {
+	bearerToken, err := getBearerTokenByBasicAuth(apiKey, apiSecret)
+	if err != nil {
+		return err
+	}
+	return AuthByBearerToken(bearerToken, configFilepath)
+}
+
+func getBearerTokenByBasicAuth(apiKey, apiSecret string) (string, error) {
+	const endpoint = "https://api.twitter.com/oauth2/token"
+
+	reqBody := bytes.NewBufferString("grant_type=client_credentials")
+
+	// create new request
+	req, err := http.NewRequest(http.MethodPost, endpoint, reqBody)
+	if err != nil {
+		return "", err
+	}
+	req.SetBasicAuth(apiKey, apiSecret)
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
+
+	// send the request
+	client := new(http.Client)
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	// convert the response to struct
+	var res struct {
+		TokenType   string `json:"token_type"`
+		AccessToken string `json:"access_token"`
+	}
+	if err := json.Unmarshal(body, &res); err != nil {
+		return "", err
+	}
+
+	return res.AccessToken, nil
 }
