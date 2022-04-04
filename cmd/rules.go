@@ -36,8 +36,11 @@ var rulesAddFlags struct {
 var rulesAddCmd = &cobra.Command{
 	Use:  "add",
 	Args: cobra.ExactArgs(1),
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		return checkAuth("rules add")
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		bearerToken := os.Getenv("TWITTER_BEARER_TOKEN")
+		bearerToken := config.BearerToken
 
 		rules := []Rule{
 			{
@@ -60,8 +63,11 @@ var rulesAddCmd = &cobra.Command{
 var rulesDeleteCmd = &cobra.Command{
 	Use:  "delete",
 	Args: cobra.MinimumNArgs(1),
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		return checkAuth("rules delete")
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		bearerToken := os.Getenv("TWITTER_BEARER_TOKEN")
+		bearerToken := config.BearerToken
 
 		ids := args
 
@@ -80,8 +86,11 @@ var rulesDeleteCmd = &cobra.Command{
 
 var rulesListCmd = &cobra.Command{
 	Use: "list",
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		return checkAuth("rules list")
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		bearerToken := os.Getenv("TWITTER_BEARER_TOKEN")
+		bearerToken := config.BearerToken
 
 		rules, err := GetRules(bearerToken)
 		if err != nil {

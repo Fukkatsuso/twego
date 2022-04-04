@@ -19,8 +19,11 @@ func init() {
 
 var streamCmd = &cobra.Command{
 	Use: "stream",
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		return checkAuth("stream")
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		bearerToken := os.Getenv("TWITTER_BEARER_TOKEN")
+		bearerToken := config.BearerToken
 
 		done := make(chan struct{})
 		defer close(done)
