@@ -6,8 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: twego
-    env_file:
-      - .env
+    tty: true
     volumes:
       - ./:/go/src/github.com/Fukkatsuso/twego
-    command: go run main.go stream
