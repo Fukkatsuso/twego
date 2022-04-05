@@ -10,6 +10,9 @@ func init() {
 
 var unauthCmd = &cobra.Command{
 	Use: "unauth",
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		return checkAuth("unauth")
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return Unauth(defaultConfigFilepath())
 	},
