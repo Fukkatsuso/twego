@@ -167,6 +167,11 @@ func AddRules(bearerToken string, rules []Rule) ([]Rule, error) {
 		return nil, err
 	}
 
+	// error handling
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s", string(body))
+	}
+
 	// convert the response to []Rule
 	var res struct {
 		Data []Rule `json:"data"`
@@ -227,6 +232,11 @@ func DeleteRules(bearerToken string, ids []string) error {
 		return err
 	}
 
+	// error handling
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%s", string(body))
+	}
+
 	// convert the response
 	var res struct {
 		Meta struct {
@@ -266,6 +276,11 @@ func GetRules(bearerToken string) ([]Rule, error) {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	// error handling
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s", string(body))
 	}
 
 	// convert the response to []Rule
