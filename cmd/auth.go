@@ -87,6 +87,22 @@ func getBearerTokenByBasicAuth(apiKey, apiSecret string) (string, error) {
 		return "", err
 	}
 
+	// error handling
+	if resp.StatusCode != http.StatusOK {
+		var res struct {
+			Errors []struct {
+				Code    int    `json:"code"`
+				Label   string `json:"label,omitempty"`
+				Message string `json:"message"`
+			} `json:"errors"`
+		}
+		if err := json.Unmarshal(body, &res); err != nil {
+			return "", err
+		}
+
+		return "", fmt.Errorf("Errors: %+v", res.Errors)
+	}
+
 	// convert the response to struct
 	var res struct {
 		TokenType   string `json:"token_type"`
