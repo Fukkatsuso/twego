@@ -168,7 +168,7 @@ func AddRules(bearerToken string, rules []Rule) ([]Rule, error) {
 	}
 
 	// error handling
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s", string(body))
 	}
 
