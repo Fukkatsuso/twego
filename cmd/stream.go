@@ -131,7 +131,16 @@ func GetTweetStream(done <-chan struct{}, bearerToken string) <-chan Tweet {
 			select {
 			case <-done:
 				return
-			case stream <- <-decoded:
+			case tweet, ok := <-decoded:
+				if !ok {
+					fmt.Println("cannot read the decoded response")
+					return
+				}
+				select {
+				case <-done:
+					return
+				case stream <- tweet:
+				}
 			}
 		}
 	}()
