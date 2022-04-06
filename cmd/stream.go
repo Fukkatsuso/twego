@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -89,6 +90,29 @@ func GetTweetStream(done <-chan struct{}, bearerToken string) <-chan Tweet {
 			return
 		}
 		defer resp.Body.Close()
+
+		// error handling
+		if resp.StatusCode != http.StatusOK {
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			var res struct {
+				Title  string `json:"title"`
+				Detail string `json:"detail"`
+				Type   string `json:"type"`
+				Status int    `json:"status"`
+			}
+			if err := json.Unmarshal(body, &res); err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			fmt.Printf("Error: %+v\n", res)
+			return
+		}
 
 		// decode the response to Tweet
 		decoder := json.NewDecoder(resp.Body)
