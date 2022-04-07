@@ -55,9 +55,11 @@ func writeConfig(config Config, path string) error {
 
 func createFile(path string) error {
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0666); err != nil {
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
 	}
+
+	os.Chmod(dir, 0777)
 
 	_, err := os.Create(path)
 	return err
