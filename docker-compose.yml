@@ -5,7 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: base
     container_name: twego
     tty: true
     volumes:
       - ./:/go/src/github.com/Fukkatsuso/twego
+      - /root/.twego
