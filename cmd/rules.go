@@ -34,8 +34,9 @@ var rulesAddFlags struct {
 }
 
 var rulesAddCmd = &cobra.Command{
-	Use:  "add",
-	Args: cobra.ExactArgs(1),
+	Use:     "add",
+	Example: `add "golang -is:retweet" --tag "golang"`,
+	Args:    cobra.ExactArgs(1),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		return checkAuth("rules add")
 	},
@@ -61,8 +62,9 @@ var rulesAddCmd = &cobra.Command{
 }
 
 var rulesDeleteCmd = &cobra.Command{
-	Use:  "delete ID [ID...]",
-	Args: cobra.MinimumNArgs(1),
+	Use:     "delete ID [ID...]",
+	Example: "delete 1234567890123456789 0123456789012345678",
+	Args:    cobra.MinimumNArgs(1),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		return checkAuth("rules delete")
 	},

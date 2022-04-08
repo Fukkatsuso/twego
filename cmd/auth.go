@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -27,6 +28,10 @@ var authFlags struct {
 
 var authCmd = &cobra.Command{
 	Use: "auth",
+	Example: strings.Join([]string{
+		"auth --bearer $TWITTER_BEARER_TOKEN",
+		"auth --key $TWITTER_API_KEY --secret $TWITTER_API_SECRET",
+	}, "\n"),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if authFlags.BearerToken != "" {
 			return AuthByBearerToken(authFlags.BearerToken, defaultConfigFilepath())
