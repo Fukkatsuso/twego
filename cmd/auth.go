@@ -27,7 +27,9 @@ var authFlags struct {
 }
 
 var authCmd = &cobra.Command{
-	Use: "auth",
+	Use:   "auth",
+	Short: "Set your Twitter Bearer Token",
+	Long:  fmt.Sprintf("Set your Twitter Bearer Token.\nIt will be saved to %s.\nYou can also set it by Twitter API key and API secret.", defaultConfigFilepath()),
 	Example: strings.Join([]string{
 		"auth --bearer $TWITTER_BEARER_TOKEN",
 		"auth --key $TWITTER_API_KEY --secret $TWITTER_API_SECRET",
