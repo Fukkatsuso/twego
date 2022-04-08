@@ -61,7 +61,7 @@ var rulesAddCmd = &cobra.Command{
 }
 
 var rulesDeleteCmd = &cobra.Command{
-	Use:  "delete",
+	Use:  "delete ID [ID...]",
 	Args: cobra.MinimumNArgs(1),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		return checkAuth("rules delete")
