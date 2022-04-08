@@ -26,7 +26,9 @@ func init() {
 }
 
 var rulesCmd = &cobra.Command{
-	Use: "rules",
+	Use:   "rules",
+	Short: "Add or delete rules to your stream, or list rules",
+	Long:  "Add or delete rules to your stream, or list rules.",
 }
 
 var rulesAddFlags struct {
@@ -34,8 +36,11 @@ var rulesAddFlags struct {
 }
 
 var rulesAddCmd = &cobra.Command{
-	Use:  "add",
-	Args: cobra.ExactArgs(1),
+	Use:     "add",
+	Short:   "Add a rule to your stream",
+	Long:    "Add a rule to your stream.\nHow to build a rule: https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/integrate/build-a-rule",
+	Example: `add "golang -is:retweet" --tag "golang"`,
+	Args:    cobra.ExactArgs(1),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		return checkAuth("rules add")
 	},
@@ -61,8 +66,11 @@ var rulesAddCmd = &cobra.Command{
 }
 
 var rulesDeleteCmd = &cobra.Command{
-	Use:  "delete",
-	Args: cobra.MinimumNArgs(1),
+	Use:     "delete ID [ID...]",
+	Short:   "Delete rules by ID",
+	Long:    "Delete rules by ID.\nYou can specify multiple rule IDs.",
+	Example: "delete 1234567890123456789 0123456789012345678",
+	Args:    cobra.MinimumNArgs(1),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		return checkAuth("rules delete")
 	},
@@ -85,7 +93,9 @@ var rulesDeleteCmd = &cobra.Command{
 }
 
 var rulesListCmd = &cobra.Command{
-	Use: "list",
+	Use:   "list",
+	Short: "List rules",
+	Long:  "List rules.",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		return checkAuth("rules list")
 	},

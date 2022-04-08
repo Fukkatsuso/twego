@@ -44,6 +44,15 @@ $ twego rules delete 1234567890123456789 0123456789012345678
 
 ```bash
 $ twego stream
+2022/04/08 19:40:31  Lorem ipsum dolor sit amet, eu prompta molestie mea, primis civibus tractatos at eos, ei vis erat corrumpit abhorreant.
+2022/04/08 19:40:41  Ad qui amet doctus appareat, enim choro epicuri eu nam.
+                     Usu zril tollit torquatos an, eum case veniam eu.
+2022/04/08 19:40:43  Nullam scripta perpetua duo an,
+
+                     solet tation iriure ex vim.
+
+                     Quis ignota primis ne vix.
+...
 ```
 
 ## Use Docker

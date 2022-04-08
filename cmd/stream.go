@@ -19,7 +19,9 @@ func init() {
 }
 
 var streamCmd = &cobra.Command{
-	Use: "stream",
+	Use:   "stream",
+	Short: "Stream Tweets in real-time that match the rules you added",
+	Long:  "Stream Tweets in real-time that match the rules you added.\nIf you haven't added any rules, you will not receive any Tweets.",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		return checkAuth("stream")
 	},
