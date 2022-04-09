@@ -2,6 +2,8 @@
 
 subscribing to real-time stream of public tweets
 
+![twego-demo](docs/twego-demo.gif)
+
 ## Installation
 
 ```bash
